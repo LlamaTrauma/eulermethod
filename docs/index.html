@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .plzcenterkthnx {
+            margin: 0 auto;
+            text-align: center;
+            width: auto;
+        }
+        #heady {
+            background-color: #fbff89;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 50px;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        .inputBunch {
+            margin: 0 auto 20px;
+            display: inline-block !important;
+            font-size: 20px;
+        }
+        .inputBunch *{
+            margin: auto auto;
+            float: left;
+            line-height: 20px;
+            vertical-align: middle;
+        }
+        .inputBunch input{
+            float: left;
+            margin-left: 10px !imporant;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 3px 3px;
+            background-color: #eee;
+            width: 20px;
+            height: 10px;
+        }
+        .results canvas {
+            display: inline-block;
+            vertical-align:top;
+        }
+        .results table {
+            display: inline-table;
+            vertical-align:top;
+        }
+        .results {
+            display: block;
+        }
+    </style>
+<script src="/js/math.js"></script>    
+</head>
+<body bgcolor = "#ffca75">
+<div id = "heady">EULER'S METHOD CALCULATOR</div>
+<div class = "plzcenterkthnx">
+<div class = "inputBunch">
+<p>Derivitive equation:</p><input id = "equ" value = "3x^2">
+</div>
+<br>
+<div class = "inputBunch">
+<p>Starting x value:</p><input type = "text" id = "startx" value = "0">
+</div>
+<br>
+<div class = "inputBunch">
+<p>Starting y value:</p><input type = "text" id = "starty" value = "0">
+</div>
+<br>
+<div class = "inputBunch">
+<p>Step size:</p><input type = "text" id = "step" value = "0.1">
+</div>
+<br>
+<div class = "inputBunch">
+<p>Ending x value:</p><input type = "text" id = "endx" value = "5">
+</div>
+<br>
+<button id = "eval" onclick = "eval()">Evaluate</button>
+</div>
+<br>
+<div class = "plzcenterkthnx">
+<p id = "result"></p>
+<div class = "results">
+<canvas id = "graphCanvas"></canvas>
+<table id = "resultTable">
+</table>
+</div>
+</div>
+<script>
+var equ = "3x^2";
+var toDraw = [];
+var canvas = document.getElementById("graphCanvas");
+var ctx = canvas.getContext("2d");
+canvas.width = 520;
+canvas.height = 510;
+canvas.innerWidth = 520;
+canvas.innerHeight = 510;
+var canv = {
+    x:{
+    max: 0,
+    min: 0,
+    start: 50,
+    end: 500,
+    },
+    y:{
+    max:0,
+    min:0,
+    start: 20,
+    end: 470,
+    }
+};
+
+function mapTo(a, b){
+    return(a.start + ((b - a.min) / (a.max - a.min)) * (a.end-a.start));
+};
+
+function roundTo(a, b){
+    return(Math.round(a * Math.pow(10, b)) / Math.pow(10, b))
+};
+
+function drawCanvas(a, canvy){
+    var ctxy = a.getContext("2d");
+    ctxy.clearRect(0, 0, a.width, a.height);
+    ctxy.fillStyle = "#AAAAAA";
+    ctxy.lineWidth = "3";
+    ctxy.fillRect(0, 0, a.width, a.height);
+    ctxy.fillStyle = "#000000";
+    for(var i = 0; i < toDraw.length; i ++){
+        ctxy.fillRect(mapTo(canvy.x, toDraw[i][0]), mapTo(canvy.y, toDraw[i][1]) - 2, 4, 4);
+    }
+    for(var j = 0; j <= 9; j ++){
+        var xmap = roundTo(canvy.x.min + (j/9) * (canvy.x.max - canvy.x.min), 2);
+        ctxy.save();
+        ctxy.textAlign = "top";
+        ctxy.translate(mapTo(canvy.x, xmap), canvy.y.end + 21);
+        //ctxy.rotate(-Math.PI * 3 / 2);
+        ctxy.fillText(xmap, 0, 0);
+        ctxy.restore();
+    }
+    for(var j = 0; j <= 9; j ++){
+        var ymap = roundTo(canvy.y.min + (j/9) * (canvy.y.max - canvy.y.min), 2);
+        ctxy.save();
+        ctxy.translate(canvy.x.start - 14, mapTo(canvy.y, ymap));
+        //ctx.rotate(-Math.PI * 3 / 2);
+        ctxy.textAlign = "end";
+        ctxy.fillText(ymap, 0, 0);
+        ctxy.restore();
+    }
+    ctxy.fillRect(canvy.x.start - 9, canvy.y.end + 6, canvy.x.end-canvy.x.start + 14, 5);
+    ctxy.fillRect(canvy.x.start - 9, canvy.y.start - 5, 5, canvy.y.end-canvy.y.start + 12);
+};
+
+function euler(f, start, end, step){
+    toDraw = [];
+    const node2 = math.parse(equ)
+    const code2 = node2.compile()
+    end = Number(end)
+    var x = Number(start[0]);
+    var dir = (x > end ? -1 : 1);
+    var y = Number(start[1]);
+    canv.x.min = Math.min(start[0], end);
+    canv.x.max = Math.max(start[0], end);
+    toDraw.push([x, y]);
+    var scope = {x: x};
+    var ymin = y;
+    var ymax = y;
+    var step = Number(step) || 0.001;
+    while(x !== end){
+        step = (Math.abs(step) < Math.abs(end - x)) ? (step) : (end-x);
+        console.log(x);
+            y += code2.eval(scope) * step;
+            ymin = Math.min(y, ymin)
+            ymax = Math.max(y, ymax)
+            x += step;
+            x = roundTo(x, 7);
+            toDraw.push([x, y]);
+            scope = {x: x};
+    }
+    canv.y.min = ymax;
+    canv.y.max = ymin;
+    drawCanvas(canvas, canv);
+    return([x, y, toDraw]);
+}
+
+function isNumeric(num){
+    return !isNaN(num)
+}
+
+function pow3deriv (a){
+    return(3 * Math.pow(a, 2));
+};
+
+function eval(){
+equ = document.getElementById("equ").value;
+console.log(equ);
+var res = (euler(equ, [document.getElementById("startx").value, document.getElementById("starty").value], document.getElementById("endx").value, document.getElementById("step").value));
+document.getElementById("result").innerHTML = "Final Coordinate: (" + res[0] + ", <b>" + roundTo(res[1], 4) + "</b>)";
+document.getElementById("resultTable").innerHTML = "<tr><th>Step</th><th>X</th><th>Y</th></tr>";
+for(var i = 0; i < res[2].length; i ++){
+document.getElementById("resultTable").innerHTML += "<tr><td>" + i + "</td><td>" + roundTo(res[2][i][0], 4) + "</td><td>" + roundTo(res[2][i][1], 4) + "</td></tr>";
+}
+}
+</script>
+</body>
+</html> 
