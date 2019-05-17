@@ -15,6 +15,9 @@
             padding: 0;
             margin: 0 0 20px 0;
         }
+        #connect {
+            margin: 15px auto;
+        }
         .inputBunch {
             margin: 0 auto 20px;
             display: inline-block !important;
@@ -51,6 +54,9 @@
         .results {
             display: block;
         }
+        #result {
+            margin-top: 0;
+        }
     </style>
 <script src="js/math.js"></script>
 </head>
@@ -78,8 +84,9 @@
 </div>
 <br>
 <button id = "eval" onclick = "eval()">Evaluate</button>
-</div>
 <br>
+<input type="checkbox" id="connect">Connect points?<br>
+</div>
 <div class = "plzcenterkthnx">
 <p id = "result"></p>
 <div class = "results">
@@ -127,9 +134,19 @@ function drawCanvas(a, canvy){
     ctxy.lineWidth = "3";
     ctxy.fillRect(0, 0, a.width, a.height);
     ctxy.fillStyle = "#000000";
+    ctx.beginPath();
     for(var i = 0; i < toDraw.length; i ++){
+        if(document.getElementById("connect").checked){
+        if(i === 0){
+            ctx.moveTo(mapTo(canvy.x, toDraw[i][0]) + 2, mapTo(canvy.y, toDraw[i][1]));
+        }
+        else{
+            ctx.lineTo(mapTo(canvy.x, toDraw[i][0]) + 2, mapTo(canvy.y, toDraw[i][1]));
+        }
+        }
         ctxy.fillRect(mapTo(canvy.x, toDraw[i][0]), mapTo(canvy.y, toDraw[i][1]) - 2, 4, 4);
     }
+    ctx.stroke();
     for(var j = 0; j <= 9; j ++){
         var xmap = roundTo(canvy.x.min + (j/9) * (canvy.x.max - canvy.x.min), 2);
         ctxy.save();
