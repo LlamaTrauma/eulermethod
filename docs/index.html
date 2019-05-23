@@ -108,14 +108,11 @@
 </div>
 </div>
 <script>
+var steps = 0;
 var equ = "3x^2";
 var toDraw = [];
 var canvas = document.getElementById("graphCanvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 520;
-canvas.height = 510;
-canvas.innerWidth = 520;
-canvas.innerHeight = 510;
 var canv = {
     x:{
     max: 0,
@@ -147,16 +144,21 @@ function drawCanvas(a, canvy){
     ctxy.fillRect(0, 0, a.width, a.height);
     ctxy.fillStyle = "#000000";
     ctx.beginPath();
-    for(var i = 0; i < toDraw.length; i ++){
+    var jumpSize = (toDraw.length - 1) / 100;
+    if(jumpSize < 1){
+        jumpSize = 1;
+    }
+    for(var i = 0; i < toDraw.length; i += jumpSize){
+        var j = Math.round(i);
         if(document.getElementById("connect").checked){
-        if(i === 0){
-            ctx.moveTo(mapTo(canvy.x, toDraw[i][0]) + 2, mapTo(canvy.y, toDraw[i][1]));
+        if(j === 0){
+            ctx.moveTo(mapTo(canvy.x, toDraw[j][0]) + 2, mapTo(canvy.y, toDraw[j][1]));
         }
         else{
-            ctx.lineTo(mapTo(canvy.x, toDraw[i][0]) + 2, mapTo(canvy.y, toDraw[i][1]));
+            ctx.lineTo(mapTo(canvy.x, toDraw[j][0]) + 2, mapTo(canvy.y, toDraw[j][1]));
         }
         }
-        ctxy.fillRect(mapTo(canvy.x, toDraw[i][0]), mapTo(canvy.y, toDraw[i][1]) - 2, 4, 4);
+        ctxy.fillRect(mapTo(canvy.x, toDraw[j][0]), mapTo(canvy.y, toDraw[j][1]) - 2, 4, 4);
     }
     ctx.stroke();
     for(var j = 0; j <= 9; j ++){
@@ -221,13 +223,23 @@ function pow3deriv (a){
 };
 
 function eval(){
+steps = (document.getElementById("endx").value - document.getElementById("startx").value) / document.getElementById("step").value;
+if(steps > 2000){
+    alert("Whoah there, champ. Are you trying to kill your computer?");
+}
+else{
+canvas.width = 520;
+canvas.height = 510;
+canvas.innerWidth = 520;
+canvas.innerHeight = 510;
 document.getElementById("explain").style.display = "none";
 equ = document.getElementById("equ").value;
-var res = (euler(equ, [document.getElementById("startx").value, document.getElementById("starty").value], document.getElementById("endx").value, document.getElementById("step").value));
+var res = euler(equ, [document.getElementById("startx").value, document.getElementById("starty").value], document.getElementById("endx").value, document.getElementById("step").value);
 document.getElementById("result").innerHTML = "Final Coordinate: (" + res[0] + ", <b>" + roundTo(res[1], 4) + "</b>)";
 document.getElementById("resultTable").innerHTML = "<tr><th>Step</th><th>X</th><th>Y</th></tr>";
 for(var i = 0; i < res[2].length; i ++){
 document.getElementById("resultTable").innerHTML += "<tr><td>" + i + "</td><td>" + roundTo(res[2][i][0], 4) + "</td><td>" + roundTo(res[2][i][1], 4) + "</td></tr>";
+}
 }
 }
 </script>
