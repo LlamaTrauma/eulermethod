@@ -7,7 +7,13 @@
             text-align: center;
             width: auto;
         }
-        #heady {
+        /* {
+            background-image: url("../cgi-bin/calc.jpg");
+            background-repeat: repeat; 
+            background-position: center; 
+            background-size: auto 100%;
+        }*/
+        #heady { 
             background-color: #fbff89;
             text-align: center;
             margin-bottom: 20px;
@@ -57,6 +63,11 @@
         #result {
             margin-top: 0;
         }
+        #explain {
+            font-size: 20px;
+            width: 800px;
+            margin: 0 auto;
+        }
     </style>
 <script src="js/math.js"></script>
 </head>
@@ -64,7 +75,7 @@
 <div id = "heady">EULER'S METHOD CALCULATOR</div>
 <div class = "plzcenterkthnx">
 <div class = "inputBunch">
-<p>Derivitive equation:</p><input id = "equ" value = "3x^2">
+<p>Equation of f'(x): f'(x)=</p><input id = "equ" value = "3x^2">
 </div>
 <br>
 <div class = "inputBunch">
@@ -86,6 +97,7 @@
 <button id = "eval" onclick = "eval()">Evaluate</button>
 <br>
 <input type="checkbox" id="connect">Connect points?<br>
+<p id = "explain"><b>What is Euler's Method?</b><br><br>Euler's method is a method for approximating the integral of an equation. When given a starting point, step size, and ending x value, you can travel in steps away from the starting point, for each step add a value to the current y position equal to the value of the derivitive equation at that step multiplied by the step size. It employs f(x)dx using finite step sizes.</p>
 </div>
 <div class = "plzcenterkthnx">
 <p id = "result"></p>
@@ -186,7 +198,6 @@ function euler(f, start, end, step){
     var step = Number(step) || 0.001;
     while(x !== end){
         step = (Math.abs(step) < Math.abs(end - x)) ? (step) : (end-x);
-        console.log(x);
             y += code2.eval(scope) * step;
             ymin = Math.min(y, ymin)
             ymax = Math.max(y, ymax)
@@ -210,8 +221,8 @@ function pow3deriv (a){
 };
 
 function eval(){
+document.getElementById("explain").style.display = "none";
 equ = document.getElementById("equ").value;
-console.log(equ);
 var res = (euler(equ, [document.getElementById("startx").value, document.getElementById("starty").value], document.getElementById("endx").value, document.getElementById("step").value));
 document.getElementById("result").innerHTML = "Final Coordinate: (" + res[0] + ", <b>" + roundTo(res[1], 4) + "</b>)";
 document.getElementById("resultTable").innerHTML = "<tr><th>Step</th><th>X</th><th>Y</th></tr>";
