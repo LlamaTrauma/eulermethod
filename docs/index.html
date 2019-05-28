@@ -204,7 +204,7 @@ function euler(f, start, end, step){
             ymin = Math.min(y, ymin)
             ymax = Math.max(y, ymax)
             x += step;
-            x = roundTo(x, 7);
+            x = roundTo(x, 12);
             toDraw.push([x, y]);
             scope = {x: x};
     }
