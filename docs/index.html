@@ -224,7 +224,7 @@ function pow3deriv (a){
 
 function eval(){
 steps = (document.getElementById("endx").value - document.getElementById("startx").value) / document.getElementById("step").value;
-if(steps > 2000){
+if(steps > 2000000000000){
     alert("Whoah there, champ. Are you trying to kill your computer?");
 }
 else{
@@ -237,7 +237,11 @@ equ = document.getElementById("equ").value;
 var res = euler(equ, [document.getElementById("startx").value, document.getElementById("starty").value], document.getElementById("endx").value, document.getElementById("step").value);
 document.getElementById("result").innerHTML = "Final Coordinate: (" + res[0] + ", <b>" + roundTo(res[1], 4) + "</b>)";
 document.getElementById("resultTable").innerHTML = "<tr><th>Step</th><th>X</th><th>Y</th></tr>";
-for(var i = 0; i < res[2].length; i ++){
+var jumpSize = (toDraw.length - 1) / 100;
+    if(jumpSize < 1){
+        jumpSize = 1;
+    }
+    for(var i = 0; i < res[2].length; i += jumpSize){    
 document.getElementById("resultTable").innerHTML += "<tr><td>" + i + "</td><td>" + roundTo(res[2][i][0], 4) + "</td><td>" + roundTo(res[2][i][1], 4) + "</td></tr>";
 }
 }
